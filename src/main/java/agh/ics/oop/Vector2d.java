@@ -39,6 +39,10 @@ public class Vector2d {
         return new Vector2d(this.x - other.x, this.y - other.y);
     }
 
+    public Vector2d multiply(Vector2d other) {
+        return new Vector2d(this.x * other.x, this.y * other.y);
+    }
+
     public boolean equals(Object other) {
         if(this == other)
             return true;

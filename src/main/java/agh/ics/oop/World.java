@@ -9,11 +9,13 @@ public class World {
     public static void main(String[] args) {
         out.println("Start");
 
-        Animal animal = new Animal();
-        out.println(animal.toString());
-        run(Stream.of(OptionsParser.parse(args)));
-        Stream.of(OptionsParser.parse(args)).forEach(moveDirection -> animal.move(moveDirection));
-        out.println(animal.toString());
+        MoveDirection[] directions = new OptionsParser().parse(args);
+        IWorldMap map = new RectangularMap(10, 5);
+        Vector2d[] positions = { new Vector2d(2,2), new Vector2d(3,4) };
+        IEngine engine = new SimulationEngine(directions, map, positions);
+        out.println(map.toString());
+        engine.run();
+        out.println(map.toString());
 
         out.println("Stop");
     }

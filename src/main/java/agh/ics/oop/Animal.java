@@ -2,18 +2,18 @@ package agh.ics.oop;
 
 import static java.lang.System.out;
 
-public class Animal {
+public class Animal implements IMapElement {
 
-    private IWorldMap map;
+    private AbstractWorldMap map;
     private MapDirection orientation = MapDirection.North;
     private Vector2d position;
 
-    public Animal(IWorldMap map)
+    public Animal(AbstractWorldMap map)
     {
         this(map, new Vector2d(2,2));
     }
 
-    public Animal(IWorldMap map, Vector2d initialPosition)
+    public Animal(AbstractWorldMap map, Vector2d initialPosition)
     {
         this.position = initialPosition;
 
@@ -67,7 +67,13 @@ public class Animal {
 
         Vector2d newPosition = this.position.add(moveVector);
 
-        if(!this.isOnTheMap() || this.map.canMoveTo(newPosition))
+        if(!this.isOnTheMap() || this.map.canMoveTo(newPosition)) {
+            if(this.map instanceof GrassField) {
+                Object objectOnNewPosition = this.map.objectAt(newPosition);
+                if (objectOnNewPosition != null && objectOnNewPosition instanceof Grass)
+                    ((GrassField)this.map).RespawnGrass((Grass)objectOnNewPosition);
+            }
             this.position = newPosition;
+        }
     }
 }

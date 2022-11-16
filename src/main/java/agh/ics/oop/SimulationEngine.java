@@ -7,13 +7,15 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.System.out;
+
 public class SimulationEngine implements IEngine {
-    private IWorldMap map;
+    private AbstractWorldMap map;
 
     private MoveDirection[] directions;
     private List<Animal> animals;
 
-    public SimulationEngine(MoveDirection[] directions, IWorldMap map, Vector2d[] positions) {
+    public SimulationEngine(MoveDirection[] directions, AbstractWorldMap map, Vector2d[] positions) {
         this.map = map;
         this.directions = directions;
 
@@ -28,8 +30,9 @@ public class SimulationEngine implements IEngine {
     private JTextPane textPane;
     private Timer timer;
     private List<String> animationSteps;
-    private JTextPane createSwingFrame(RectangularMap rectMap) {
-        Vector2d windowSize = (rectMap.getUpperRight().subtract(rectMap.getLowerLeft())
+    private JTextPane createSwingFrame(AbstractWorldMap map) {
+        AbstractWorldMap.MapBounds bounds = map.getMapBounds();
+        Vector2d windowSize = (bounds.upperRight.subtract(bounds.lowerLeft)
                 .multiply(new Vector2d(2, 1))
                 .add(new Vector2d(6,4)))
                 .multiply(new Vector2d(16, 38));
@@ -72,16 +75,14 @@ public class SimulationEngine implements IEngine {
     }
 
     public void run() {
-        RectangularMap rectMap = (RectangularMap)this.map;
-
         this.animationSteps = new ArrayList<>();
-        this.animationSteps.add("Initial map\n" +new MapVisualizer(rectMap).draw(rectMap.getLowerLeft(), rectMap.getUpperRight()));
+        this.animationSteps.add("Initial map\n" + map.toString());
         for (int i = 0; i < this.directions.length; i++) {
             this.animals.get(i%this.animals.size()).move(this.directions[i]);
-            this.animationSteps.add("Move " + (i+1) + "/" + this.directions.length + "\n" + new MapVisualizer(rectMap).draw(rectMap.getLowerLeft(), rectMap.getUpperRight()));
+            this.animationSteps.add("Move " + (i+1) + "/" + this.directions.length + "\n" + map.toString());
         }
 
         if(this.animationSteps.size() > 0)
-            this.textPane = createSwingFrame(rectMap);
+            this.textPane = createSwingFrame(map);
     }
 }

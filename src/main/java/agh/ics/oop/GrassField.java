@@ -1,15 +1,13 @@
 package agh.ics.oop;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static java.lang.System.out;
 
 public class GrassField extends AbstractWorldMap {
     private int range;
 
-    private List<Grass> grasses;
+    private Map<Vector2d, Grass> grasses;
 
     @Override
     public MapBounds getMapBounds() {
@@ -17,18 +15,18 @@ public class GrassField extends AbstractWorldMap {
     }
 
     public GrassField(int grassCount) {
-        this.grasses = new ArrayList<>();
+        this.grasses = new HashMap<>();
 
         Random rand = new Random();
         this.range = ((int) Math.sqrt(grassCount*10))+1;
         for (int i=0; i<grassCount; i++) {
             Vector2d newPosition = new Vector2d(rand.nextInt(this.range),rand.nextInt(this.range));
-            if(this.grasses.stream().anyMatch(grass -> grass.getPosition().equals(newPosition))) {
+            if(this.grasses.get(newPosition) != null) {
                 i--;
                 continue;
             }
 
-            this.grasses.add(new Grass(newPosition));
+            this.grasses.put(newPosition, new Grass(newPosition));
         }
     }
 
@@ -40,14 +38,14 @@ public class GrassField extends AbstractWorldMap {
         do {
             newPosition = new Vector2d(rand.nextInt(this.range),rand.nextInt(this.range));
         } while (objectAt(newPosition) != null);
-        this.grasses.add(new Grass(newPosition));
+        this.grasses.put(newPosition, new Grass(newPosition));
     }
 
     @Override
     public Object objectAt(Vector2d position) {
-        List<IMapElement> objectsOnMap = new ArrayList<>();
-        objectsOnMap.addAll(this.animals);
-        objectsOnMap.addAll(this.grasses);
-        return objectsOnMap.stream().filter(obj -> obj.getPosition().equals(position)).findAny().orElse(null);
+        Object objectAtPosition = this.animals.get(position);
+        if(objectAtPosition == null)
+            objectAtPosition = this.grasses.get(position);
+        return objectAtPosition;
     }
 }

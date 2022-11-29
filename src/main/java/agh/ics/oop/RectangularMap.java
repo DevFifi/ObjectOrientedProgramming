@@ -28,6 +28,6 @@ public class RectangularMap extends AbstractWorldMap {
 
     @Override
     public Object objectAt(Vector2d position) {
-        return this.animals.stream().filter(animal -> animal.isAt(position)).findAny().orElse(null);
+        return this.animals.get(position);
     }
 }

@@ -1,5 +1,8 @@
 package agh.ics.oop;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static java.lang.System.out;
 
 public class Animal implements IMapElement {
@@ -17,8 +20,10 @@ public class Animal implements IMapElement {
     {
         this.position = initialPosition;
 
-        if(map.place(this))
+        if(map.place(this)) {
             this.map = map;
+            this.addObserver((IPositionChangeObserver) this.map);
+        }
     }
 
     public String toString() {
@@ -73,7 +78,23 @@ public class Animal implements IMapElement {
                 if (objectOnNewPosition != null && objectOnNewPosition instanceof Grass)
                     ((GrassField)this.map).RespawnGrass((Grass)objectOnNewPosition);
             }
+
+            this.positionChanged(this.position, newPosition);
             this.position = newPosition;
         }
+    }
+
+    private List<IPositionChangeObserver> observers = new ArrayList();
+
+    public void addObserver(IPositionChangeObserver observer) {
+        this.observers.add(observer);
+    }
+
+    public void removeObserver(IPositionChangeObserver observer) {
+        this.observers.remove(observer);
+    }
+
+    private void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
+        this.observers.forEach(observer -> observer.positionChanged(oldPosition, newPosition));
     }
 }
